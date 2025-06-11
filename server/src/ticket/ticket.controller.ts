@@ -166,15 +166,17 @@ ${text}
 
   @Post('route')
   routeTicket(@Body() body: { classification: ClassificationResult }) {
-    const { category } = body.classification;
+    const { category, confidence } = body.classification;
 
-    // Simulate routing decision
+    if (confidence < 0.6) {
+      return {
+        assignedTeam: 'Manual Review Queue',
+        status: 'Low confidence – needs human review',
+      };
+    }
+
     const assignedTeam: string = routingMap[category] || 'General Support Team';
-
     console.log(`Routing ticket to: ${assignedTeam}`);
-
-    // Optionally log or save routing info (skipped for now)
-
     return { assignedTeam, status: 'Ticket routed successfully' };
   }
 }
